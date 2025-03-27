@@ -3,7 +3,3 @@
 
 # Ignore all items in the venv
 .venv/*
-
-# Ignore deployment files
-Dockerfile
-.dockerignore
