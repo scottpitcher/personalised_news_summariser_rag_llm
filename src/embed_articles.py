@@ -22,9 +22,13 @@ model = SentenceTransformer(MODEL_NAME)
 def load_seen_urls():
     print("Loading seen files...")
     if SEEN_PATH.exists() and SEEN_PATH.stat().st_size > 0:
-        with open(SEEN_PATH, "r") as f:
-            return set(json.load(f).get("embedded_urls", []))
+        try:
+            with open(SEEN_PATH, "r") as f:
+                return set(json.load(f).get("embedded_urls", []))
+        except json.JSONDecodeError:
+            print("[!] JSON file was empty or malformed. Starting fresh.")
     return set()
+
 
 
 def save_seen_urls(urls):

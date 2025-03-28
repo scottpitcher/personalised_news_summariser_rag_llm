@@ -119,4 +119,4 @@ def query_news(query):
 # Run
 if __name__ == "__main__":
     user_query = input("What would you like to know about? ")
-    query_news(user_query
+    query_news(user_query)
