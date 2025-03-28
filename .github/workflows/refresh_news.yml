@@ -1,4 +1,4 @@
-name: Daily News Pipeline
+name: Daily News Pipeline 
 
 on:
   schedule:
