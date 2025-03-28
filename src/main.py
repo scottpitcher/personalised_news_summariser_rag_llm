@@ -27,4 +27,4 @@ def root():
 @app.post("/query")
 def handle_query(req: QueryRequest):
     response = query_news(req.query)
-    return {"answer": response["summary"], "matches": response["matches"]}
+    return {"summary": response["summary"], "matches": response["matches"]}

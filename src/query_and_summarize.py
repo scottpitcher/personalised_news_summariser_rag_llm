@@ -111,7 +111,7 @@ def query_news(query):
     print(summary)
 
     return {
-        "answer": summary or "Sorry, no summary could be generated.",
+        "summary": summary or "Sorry, no summary could be generated.",
         "matches": match_summaries
     }
 
