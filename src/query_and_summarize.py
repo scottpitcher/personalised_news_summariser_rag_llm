@@ -14,7 +14,7 @@ from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 from tqdm import tqdm
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(override=False)
 
 # Config
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

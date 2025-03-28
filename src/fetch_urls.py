@@ -6,7 +6,7 @@ import json
 import time
 
 # Set up 
-load_dotenv()
+load_dotenv(override=False)
 API_KEY = os.getenv("NEWS_API_KEY")
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
