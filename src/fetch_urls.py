@@ -108,4 +108,4 @@ if __name__ == "__main__":
     # Placeholder for other custom custom categories
     ################################################
 
-    print(f"\nTotal articles saved: {total_articles}")
+    print(f"\nTotal articles saved: {tota

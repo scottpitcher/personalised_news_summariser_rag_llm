@@ -29,8 +29,6 @@ def load_seen_urls():
             print("[!] JSON file was empty or malformed. Starting fresh.")
     return set()
 
-
-
 def save_seen_urls(urls):
     print("Saving seen files...")
     with open(SEEN_PATH, "w") as f:
