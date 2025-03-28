@@ -1,12 +1,10 @@
-name: Daily News Pipeline 
+name: Run News Pipeline
 
 on:
-  schedule:
-    - cron: "0 0 * * *"  # Every day at midnight UTC
   workflow_dispatch:
 
 jobs:
-  run-news-pipeline:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,7 +14,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: '3.10'
 
       - name: Install dependencies
         run: |
@@ -24,14 +22,20 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run fetch_urls.py
-        env:
-          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
         run: python src/fetch_urls.py
 
       - name: Run scrape_full_articles.py
         run: python src/scrape_full_articles.py
 
       - name: Run embed_articles.py
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python src/embed_articles.py
+
+      - name: Commit and push generated data
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/articles/* data/full_text/* data/vector_store/*
+          git commit -m "Add new articles and full text for $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
