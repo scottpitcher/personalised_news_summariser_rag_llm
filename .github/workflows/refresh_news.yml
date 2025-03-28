@@ -22,12 +22,16 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run fetch_urls.py
+        env:
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
         run: python src/fetch_urls.py
-
+  
       - name: Run scrape_full_articles.py
         run: python src/scrape_full_articles.py
-
+  
       - name: Run embed_articles.py
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python src/embed_articles.py
 
       - name: Commit and push generated data
