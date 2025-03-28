@@ -18,6 +18,11 @@ app.add_middleware(
 class QueryRequest(BaseModel):
     query: str
 
+# ---------- Status Check ----------
+@app.get("/")
+def root():
+    return {"message": "News summarizer is live!"}
+
 # ---------- Endpoint ----------
 @app.post("/query")
 def handle_query(req: QueryRequest):
