@@ -1,0 +1,5 @@
+# Ignore all env vars for privacy
+.env
+
+# Ignore all items in the venv
+.venv/*

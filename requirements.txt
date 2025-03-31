@@ -1,0 +1,11 @@
+tqdm
+sentence-transformers
+faiss-cpu
+requests
+python-dotenv
+newspaper3k
+ipykernel
+lxml_html_clean
+openai
+fastapi
+uvicorn
