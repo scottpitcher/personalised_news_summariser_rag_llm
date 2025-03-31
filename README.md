@@ -13,6 +13,14 @@ The app:
 - Collects user feedback (👍/👎 or rewrite requests) to adapt over time
 
 ---
+### 💻 Example Usage
+
+
+---
+### 🔨 Roadblocks + Solutions
+| Roadblock      | Solution                                  |
+|----------------|-------------------------------------------|
+|        |                                     |
 
 ### ⚙️ Features
 
