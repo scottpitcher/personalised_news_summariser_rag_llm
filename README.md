@@ -14,13 +14,15 @@ The app:
 
 ---
 ### 💻 Example Usage
+#### News Summariser
 
 
 ---
 ### 🔨 Roadblocks + Solutions
 | Roadblock      | Solution                                  |
 |----------------|-------------------------------------------|
-|        |                                     |
+|No inherent 'politics' category in NewsAPI|Created custom category via keywork matching |
+|||
 
 ### ⚙️ Features
 
