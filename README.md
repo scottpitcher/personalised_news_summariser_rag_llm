@@ -22,6 +22,8 @@ Example 1: Politics
 Example 2: Economy
 ![Example Query 2](images/Example%20Query%202.png)
 
+#### Custom Tone Adaption
+[... In Progress...]
 
 ---
 ### 🔨 Roadblocks + Solutions
