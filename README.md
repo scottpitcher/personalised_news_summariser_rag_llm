@@ -32,6 +32,7 @@ Example 2: Economy
 |No inherent 'politics' category in NewsAPI|Created custom category using keyword search via the everything endpoint |
 |LLM Output irrelevant to user query| Retrieved articles via semantic similarity (FAISS), applied a similarity threshold, and returned a fallback "unsure" answer if no context was strong enough|
 |Bias transparency|**Potential addition(s)**: Keep database of sources with bias scores, train new agent to scan for bias and generate score.|
+|Dated articles|**Potential addition(s)**: Implement system to weight articles via date, or omit after certain timeframe.|
 
 <sub><i>*Note: all **potential additions** have not been added yet, and are stated to address gaps in project application.</i></sub>
 
