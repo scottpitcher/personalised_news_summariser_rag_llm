@@ -46,12 +46,12 @@ def fetch_all_categories():
 
 # Step 2: Scrape full content
 def scrape_all():
-    to_scrape = check_unscraped_urls()
-    if not to_scrape:
-        print("All articles already scraped.")
-    for path in to_scrape:
-        print(f"Scraping: {path}")
-        process_articles_for_date(path)
+    files_by_date = check_unscraped_urls()
+    if not files_by_date:
+        print("✅ All dates already have full text data!")
+    else:
+        for date, input_files in files_by_date.items():
+            process_articles_for_date(date, input_files)
 
 # Step 3: Embed new articles
 def embed_all():
