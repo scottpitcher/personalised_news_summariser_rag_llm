@@ -18,6 +18,7 @@ The app:
 <sub><i>*Note: all prompts were selected from top headlines when creating this project.</i></sub>
 
 ![Example Query 1](images/Example%20Query%201.png)
+![Example Query 2](images/Example%20Query%202.png)
 
 
 ---
