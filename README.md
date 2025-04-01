@@ -21,6 +21,8 @@ Example 1: Politics
 ![Example Query 1](images/Example%20Query%201.png)
 Example 2: Economy
 ![Example Query 2](images/Example%20Query%202.png)
+Example 3: Science
+![Example Query 3](images/Example%20Query%203.png)
 
 #### Custom Tone Adaption
 [... In Progress...]
