@@ -54,12 +54,12 @@ Example 3: Science
 | Component      | Tool                                      |
 |----------------|-------------------------------------------|
 | Language       | Python                                    |
-| Retrieval      | FAISS / ChromaDB                          |
+| Retrieval      | FAISS                           |
 | Embeddings     | sentence-transformers / OpenAI Embeddings |
-| LLMs           | OpenAI GPT-4 / HuggingFace models         |
+| LLMs           | OpenAI GPT-3.5         |
 | Summarization  | LangChain / Custom Prompt Templates       |
-| UI (Optional)  | Streamlit or Flask                        |
-| Data Storage   | JSON / SQLite / CSV                       |
+| UI (Optional)  | Flask                        |
+| Data Storage   | JSON / CSV                       |
 
 ---
 
