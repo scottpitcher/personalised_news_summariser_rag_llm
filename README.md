@@ -3,12 +3,12 @@
 This project is a personalized news summarization app that uses **Retrieval-Augmented Generation (RAG)** to fetch, filter, and summarize daily news articles according to a user's interests and preferred summary style.
 
 ### 🔍 Overview
-
-The app:
 - Pulls recent news articles using public APIs or RSS feeds
 - Retrieves only the **most relevant articles** based on your preferences
     - **DOES NOT** chunk articles due to context issues; news articles tend to be short
 - Summarizes them using a **customizable LLM-based summarizer**
+
+Currently adding...
 - Delivers clean, readable digests in your preferred tone and format
 - Collects user feedback (👍/👎 or rewrite requests) to adapt over time
 
@@ -45,7 +45,7 @@ Example 3: Science
 - 📰 **News API or RSS Integration** (e.g., NewsAPI, The Guardian)
 - 📥 **User Preference Profiles** (topics, style, summary length)
 - 🧠 **LLM Integration** using OpenAI, Mistral, or LLaMA models
-- 📊 **Feedback Logging** for future RLHF or fine-tuning
+- 📊 **Feedback Logging** for future RLHF or fine-tuning [Pending...]
 
 ---
 
