@@ -15,6 +15,9 @@ The app:
 ---
 ### 💻 Example Usage
 #### News Summariser
+<sub><i>*Note: all prompts were selected from top headlines when creating this project.</i></sub>
+
+![Example Query 1](images/Example%20Query%201.png)
 
 
 ---
