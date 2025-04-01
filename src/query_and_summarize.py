@@ -92,7 +92,10 @@ def query_news(query):
         content = get_article_content(article["url"], article["date"])
         status = "[KEPT]" if score <= RELEVANCE_THRESHOLD and content else "[OMITTED]"
 
-        match_str = f"📌 {title} ({source}) — Score: {score_str} {status}"
+        match_str = f"""📌 {title} {status}
+        • Source: {source}, {article['date']}
+        • Relevance Score: {score:.4f}"""
+
         print(match_str)
         match_summaries.append(match_str)
         
