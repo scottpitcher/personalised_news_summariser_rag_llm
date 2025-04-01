@@ -21,8 +21,10 @@ The app:
 ### 🔨 Roadblocks + Solutions
 | Roadblock      | Solution                                  |
 |----------------|-------------------------------------------|
-|No inherent 'politics' category in NewsAPI|Created custom category via keywork matching |
+|No inherent 'politics' category in NewsAPI|Created custom category using keyword search via the everything endpoint |
+|LLM Output irrelevant to user query| Retrieved articles via semantic similarity (FAISS), applied a similarity threshold, and returned a fallback "unsure" answer if no context was strong enough|
 |||
+
 
 ### ⚙️ Features
 
