@@ -68,4 +68,6 @@ def handle_query():
 if __name__ == "__main__":
     print("🔄 Running full news summarization pipeline...\n")
     fetch_all_categories()
-    scrape
+    scrape_all()
+    embed_all()
+    handle_query()
