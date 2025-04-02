@@ -3,10 +3,11 @@
 This project is a personalized news summarization app that uses **Retrieval-Augmented Generation (RAG)** to fetch, filter, and summarize daily news articles according to a user's interests and preferred summary style.
 
 ### 🔍 Overview
-- Pulls recent news articles using public APIs or RSS feeds
-- Retrieves only the **most relevant articles** based on your preferences
-    - **DOES NOT** chunk articles due to context issues; news articles tend to be short
-- Summarizes them using a **customizable LLM-based summarizer**
+- Pulls recent news articles using public APIs or RSS feeds *(src/fetch_urls.py)*
+      - **Scrapes** those articles *(scrape_full_articles.py)*
+- **DOES NOT** chunk articles due to context issues within them; news articles tend to be short, so context window would not be hit *(src/embed_articles.py)*
+- Retrieves only the **most relevant articles** based on your preferences 
+- Summarizes them using a **customizable LLM-based summarizer** *(src/query_and_summarize.py)*
 
 Currently adding...
 - Delivers clean, readable digests in your preferred tone and format
