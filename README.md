@@ -4,7 +4,7 @@ This project is a personalized news summarization app that uses **Retrieval-Augm
 
 ### 🔍 Overview
 - Pulls recent news articles using public APIs or RSS feeds *(src/fetch_urls.py)*
-      - **Scrapes** those articles *(scrape_full_articles.py)*
+  - **Scrapes** those articles *(scrape_full_articles.py)*
 - **DOES NOT** chunk articles due to context issues within them; news articles tend to be short, so context window would not be hit *(src/embed_articles.py)*
 - Retrieves only the **most relevant articles** based on your preferences 
 - Summarizes them using a **customizable LLM-based summarizer** *(src/query_and_summarize.py)*
