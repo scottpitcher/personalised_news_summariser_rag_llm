@@ -40,14 +40,31 @@ def save_seen_urls(urls):
     with open(SEEN_PATH, "w") as f:
         json.dump({"embedded_urls": list(urls)}, f, indent=2)
 
+# def load_existing_index_and_metadata():
+#     print("Importing FAISS file...")
+#     if INDEX_PATH.exists() and META_PATH.exists():
+#         index = faiss.read_index(str(INDEX_PATH))
+#         with open(META_PATH, "rb") as f:
+#             metadata = pickle.load(f)
+#         return index, metadata
+#     return None, []
+
 def load_existing_index_and_metadata():
     print("Importing FAISS file...")
     if INDEX_PATH.exists() and META_PATH.exists():
-        index = faiss.read_index(str(INDEX_PATH))
-        with open(META_PATH, "rb") as f:
-            metadata = pickle.load(f)
-        return index, metadata
+        try:
+            # Open the file in binary mode and read the first 20 bytes
+            with open(INDEX_PATH, "rb") as f:
+                header = f.read(20)
+            print("FAISS file header (first 20 bytes):", header)
+            index = faiss.read_index(str(INDEX_PATH))
+            with open(META_PATH, "rb") as f:
+                metadata = pickle.load(f)
+            return index, metadata
+        except Exception as e:
+            print(f"Failed to load index: {e}. Creating a new one.")
     return None, []
+
 
 def embed_new_articles():
     print("Searching files...")
