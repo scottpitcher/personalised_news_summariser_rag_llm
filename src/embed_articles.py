@@ -8,6 +8,7 @@ import faiss
 import os
 print("Working directory:", os.getcwd())
 
+
 # Setup
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FULL_TEXT_DIR = Path("data/full_text")
@@ -17,6 +18,9 @@ MODEL_NAME = "all-MiniLM-L6-v2"
 INDEX_PATH = VECTOR_STORE_DIR / "global_index.faiss"
 META_PATH = VECTOR_STORE_DIR / "global_metadata.pkl"
 SEEN_PATH = VECTOR_STORE_DIR / "seen_articles.json"
+
+print("SEEN_PATH exists:", SEEN_PATH.exists())
+print("INDEX_PATH exists:", INDEX_PATH.exists())
 
 print("Importing model...")
 model = SentenceTransformer(MODEL_NAME)
