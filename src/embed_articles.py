@@ -5,6 +5,8 @@ from pathlib import Path
 from tqdm import tqdm
 from sentence_transformers import SentenceTransformer
 import faiss
+import os
+print("Working directory:", os.getcwd())
 
 # Setup
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
