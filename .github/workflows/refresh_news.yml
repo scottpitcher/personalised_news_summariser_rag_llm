@@ -11,6 +11,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      - name: Install Git LFS and pull LFS files
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git-lfs
+          git lfs install
+          git lfs pull
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -25,10 +32,10 @@ jobs:
         env:
           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
         run: python src/fetch_urls.py
-  
+
       - name: Run scrape_full_articles.py
         run: python src/scrape_full_articles.py
-  
+
       - name: Run embed_articles.py
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
