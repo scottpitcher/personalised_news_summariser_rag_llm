@@ -8,6 +8,7 @@ This project is a personalized news summarization app that uses **Retrieval-Augm
 - **DOES NOT** chunk articles due to context issues within them; news articles tend to be short, so context window would not be hit *(src/embed_articles.py)*
 - Retrieves only the **most relevant articles** based on your preferences 
 - Summarizes them using a **customizable LLM-based summarizer** *(src/query_and_summarize.py)*
+- **Automated** to re-run data fetching *(fetch_urls -> embed_articles)* scripts at UTC-Midnight for up-to-date data *(.github/workflows/refresh_news.yml)*
 
 Currently adding...
 - Delivers clean, readable digests in your preferred tone and format
