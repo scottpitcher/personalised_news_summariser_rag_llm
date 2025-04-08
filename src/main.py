@@ -26,5 +26,5 @@ def root():
 # ---------- Endpoint ----------
 @app.post("/query")
 def handle_query(req: QueryRequest):
-    response = query_news(req.query)
+    response =  query_news(summarizer_model = 'openai', query = req.query)
     return {"summary": response["summary"], "matches": response["matches"]}

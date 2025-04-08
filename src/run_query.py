@@ -4,4 +4,4 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 if __name__ == "__main__":
     user_query = input("🔍 Ask a question about today’s news: ")
-    query_news(user_query)
+    query_news(summarizer_model = 'openai', query = user_query)

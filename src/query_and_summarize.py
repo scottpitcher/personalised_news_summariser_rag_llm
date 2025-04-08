@@ -15,12 +15,18 @@ from openai import OpenAI
 from tqdm import tqdm
 from dotenv import load_dotenv
 load_dotenv(override=False)
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+SUMMARIZER_MODEL_NAME = "facebook/bart-base" 
+local_summarizer_tokenizer = AutoTokenizer.from_pretrained(SUMMARIZER_MODEL_NAME)
+local_summarizer_model = AutoModelForSeq2SeqLM.from_pretrained(SUMMARIZER_MODEL_NAME)
+
 
 # Config
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 VECTOR_STORE_DIR = Path("data/vector_store")
 FULL_TEXT_DIR = Path("data/full_text")
-MODEL_NAME = "all-MiniLM-L6-v2" # Model for embedding
+EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
 RELEVANCE_THRESHOLD = 1.2       # controls relevance of chosen articles
 TOP_K = 3                       # Number of top articles to retrieve
 
@@ -34,7 +40,7 @@ with open(VECTOR_STORE_DIR / "global_metadata.pkl", "rb") as f:
     metadata = pickle.load(f)
 
 # Load embedding model
-model = SentenceTransformer(MODEL_NAME)
+embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
 
 # Lookup article content by URL + date
 def get_article_content(url, date):
@@ -63,7 +69,6 @@ Based on the following articles, provide a clear, casual answer to the query.:
 {articles_text}
     """.strip()
 
-    client = OpenAI()  # uses OPENAI_API_KEY env var
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{ "role": "user", "content": prompt }],
@@ -72,16 +77,30 @@ Based on the following articles, provide a clear, casual answer to the query.:
     )
     return response.choices[0].message.content.strip()
 
-# Main query pipeline
-def query_news(query):
-    query_embedding = model.encode([query])
 
-    # D: Query-Embedding distance; I: Indices of matched vectors
+def summarize_articles_local(query, articles_text):
+    prompt = (
+        f"You are a helpful assistant summarizing news for a user. "
+        f"User asked: \"{query}\". "
+        f"Based on the following articles, provide a concise summary:\n\n"
+        f"{articles_text}"
+    )
+    inputs = local_summarizer_tokenizer.encode(prompt, return_tensors="pt", truncation=True)
+    summary_ids = local_summarizer_model.generate(inputs, max_length=500, min_length=50, do_sample=True)
+    summary = local_summarizer_tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+    return summary
+
+# Main query pipeline
+def query_news(summarizer_model, query):
+    # Embed the query using your existing embedding model (assumed to be loaded as 'model')
+    query_embedding = embedding_model.encode([query])
+
+    # D: Query-Embedding distances; I: Indices of matched vectors from your FAISS index
     D, I = index.search(query_embedding, TOP_K)
 
     selected_texts = []
     match_summaries = []  # store printable match strings
-    print("\nTop Matches:\n" + "-"*40)
+    print("\nTop Matches:\n" + "-" * 40)
 
     for i, score in zip(I[0], D[0]):
         article = metadata[i]
@@ -94,8 +113,8 @@ def query_news(query):
 
         match_str = f"""📌 {title} {status}
         • Source: {source}, {article['date']}
-        • Relevance Score: {score:.4f}"""
-
+        • Relevance Score: {score_str}"""
+        
         print(match_str)
         match_summaries.append(match_str)
         
@@ -109,10 +128,19 @@ def query_news(query):
             "matches": match_summaries
         }
 
+    # Combine all selected article texts into one large string
     all_text = "\n\n---\n\n".join(selected_texts)
-    summary = summarize_articles(query, all_text)
 
-    print("\nSummary:\n" + "-"*40)
+    # Choose the summarization method based on the summarizer_model parameter
+    if summarizer_model == 'openai':
+        summary = summarize_articles(query, all_text)
+    elif summarizer_model == 'huggingface':
+        # Call your local summarization function implemented with a HuggingFace model.
+        summary = summarize_articles_local(query, all_text)
+    else:
+        raise ValueError("Unsupported summarizer_model. Choose 'openai' or 'huggingface'.")
+
+    print("\nSummary:\n" + "-" * 40)
     print(summary)
 
     return {
@@ -124,4 +152,4 @@ def query_news(query):
 # Run
 if __name__ == "__main__":
     user_query = input("What would you like to know about? ")
-    query_news(user_query)
+    query_news(summarizer_model = 'openai', query = user_query)

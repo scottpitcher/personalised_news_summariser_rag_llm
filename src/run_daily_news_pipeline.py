@@ -62,7 +62,7 @@ def embed_all():
 def handle_query():
     query = input("\n🔍 Ask a question about today’s news: ")
     if query:
-        query_news(query)
+        query_news(summarizer_model = 'openai', query = query)
 
 # Run full pipeline
 if __name__ == "__main__":
