@@ -2,6 +2,7 @@ import os
 import json
 from datetime import datetime
 from pathlib import Path
+# Import original query and summarize function from deployed script
 from query_and_summarize import query_news
 
 # Define the path for the feedback log (JSON file).
@@ -52,26 +53,37 @@ def get_valid_feedback():
         elif len(feedback_input) >= 10:
             return {"rewrite": feedback_input}
         else:
-            print("Invalid input. Please enter 'y/yes', 'n/no', or a rewrite suggestion with at least 10 characters.")
+            print("Invalid input. Please enter 'y'/'yes', 'n'/'no', or a rewrite suggestion with at least 10 characters.")
 
-def main():
-    # Step 1: Accept user query.
-    query = input("What would you like to know about? ")
-
-    # Step 2 & 3: Call existing RAG pipeline to retrieve summary.
-    result = query_news(model = 'huggingface', query= query)
-    summary = result.get("summary")
-    
-    print("\nSummary:\n" + "-" * 40)
-    print(summary)
-    
-    # Step 4: Collect and validate user feedback.
-    feedback = get_valid_feedback()
-    
-    # Log the query, summary, and feedback.
-    log_feedback(query, summary, feedback)
-    
-    print("Feedback logged.")
+def main_loop():
+    """
+    Main loop to run query and summarize, log the feedback,
+    and ask if the user wants to continue.
+    """
+    while True:
+        # Step 1: Accept user query.
+        query = input("What would you like to know about? ")
+        
+        # Step 2 & 3: Run the existing RAG pipeline.
+        # Replace 'huggingface' with 'openai' if desired.
+        result = query_news(summarizer_model='huggingface', query=query)
+        summary = result.get("summary")
+        
+        print("\nSummary:\n" + "-" * 40)
+        print(summary)
+        
+        # Step 4: Collect and validate user feedback.
+        feedback = get_valid_feedback()
+        
+        # Log the query, summary, and feedback.
+        log_feedback(query, summary, feedback)
+        print("Feedback logged.")
+        
+        # Ask if the user wants to continue
+        cont = input("Do you want to enter another query? (y/n): ").strip().lower()
+        if cont not in ["y", "yes"]:
+            print("Exiting feedback loop.")
+            break
 
 if __name__ == "__main__":
-    main()
+    main_loop()
