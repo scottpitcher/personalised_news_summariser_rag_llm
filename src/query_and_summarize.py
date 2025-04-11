@@ -1,10 +1,4 @@
 # query_and_summarize.py
-
-# The focus of this script is to  
-## Embed a user query,
-## Search the FAISS vector store,
-## Retrieve the top article contents,
-## Send them to an LLM for summarization
 import os
 import faiss
 import pickle
@@ -14,18 +8,24 @@ from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 from tqdm import tqdm
 from dotenv import load_dotenv
+import torch
 load_dotenv(override=False)
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-SUMMARIZER_MODEL_NAME = "facebook/bart-base" 
+SUMMARIZER_MODEL_NAME = "t5-base" 
 local_summarizer_tokenizer = AutoTokenizer.from_pretrained(SUMMARIZER_MODEL_NAME)
+print("Loading local_summarizer_model with use_safetensors=False and forcing CPU...")
 local_summarizer_model = AutoModelForSeq2SeqLM.from_pretrained(SUMMARIZER_MODEL_NAME)
-
+device = torch.device("cpu")
+local_summarizer_model = local_summarizer_model.to(device)
 
 # Config
+
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 VECTOR_STORE_DIR = Path("data/vector_store")
 FULL_TEXT_DIR = Path("data/full_text")
+
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
 RELEVANCE_THRESHOLD = 1.2       # controls relevance of chosen articles
 TOP_K = 3                       # Number of top articles to retrieve
@@ -44,19 +44,24 @@ embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
 
 # Lookup article content by URL + date
 def get_article_content(url, date):
+    print(f"Fetching article content for URL: {url} on date: {date}")
     file_path = FULL_TEXT_DIR / f"{date}.json"
     if not file_path.exists():
+        print("File does not exist:", file_path)
         return None
 
     with open(file_path, "r") as f:
         articles = json.load(f)
         for article in articles:
             if article.get("url") == url:
+                print("Article content found.")
                 return article.get("content")
+    print("Article content not found in file.")
     return None
 
 # Generate summary using OpenAI
 def summarize_articles(query, articles_text):
+    print("Summarizing articles using OpenAI...")
     prompt = f"""
 You are a helpful assistant summarizing current news for a user.
 It is important the response only pertains to the user's query.
@@ -69,14 +74,15 @@ Based on the following articles, provide a clear, casual answer to the query.:
 {articles_text}
     """.strip()
 
+    print("Sending prompt to OpenAI...")
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[{ "role": "user", "content": prompt }],
+        messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
         max_tokens=500,
     )
-    return response.choices[0].message.content.strip()
 
+    return response.choices[0].message.content.strip()
 
 def summarize_articles_local(query, articles_text):
     prompt = (
@@ -92,10 +98,8 @@ def summarize_articles_local(query, articles_text):
 
 # Main query pipeline
 def query_news(summarizer_model, query):
-    # Embed the query using your existing embedding model (assumed to be loaded as 'model')
+    # Embed the query using your existing embedding model
     query_embedding = embedding_model.encode([query])
-
-    # D: Query-Embedding distances; I: Indices of matched vectors from your FAISS index
     D, I = index.search(query_embedding, TOP_K)
 
     selected_texts = []
@@ -103,6 +107,7 @@ def query_news(summarizer_model, query):
     print("\nTop Matches:\n" + "-" * 40)
 
     for i, score in zip(I[0], D[0]):
+        print(f"Processing result with index: {i}, score: {score}")
         article = metadata[i]
         title = article['title']
         source = article['source']
@@ -110,15 +115,15 @@ def query_news(summarizer_model, query):
 
         content = get_article_content(article["url"], article["date"])
         status = "[KEPT]" if score <= RELEVANCE_THRESHOLD and content else "[OMITTED]"
-
         match_str = f"""📌 {title} {status}
         • Source: {source}, {article['date']}
         • Relevance Score: {score_str}"""
         
-        print(match_str)
+        print("Match summary:", match_str)
         match_summaries.append(match_str)
         
         if score <= RELEVANCE_THRESHOLD and content:
+            print("Adding article content to selected_texts.")
             selected_texts.append(content)
 
     if not selected_texts:
@@ -128,18 +133,19 @@ def query_news(summarizer_model, query):
             "matches": match_summaries
         }
 
-    # Combine all selected article texts into one large string
+    print("Combining selected articles into one text...")
     all_text = "\n\n---\n\n".join(selected_texts)
 
-    # Choose the summarization method based on the summarizer_model parameter
+    print("Choosing summarization method based on summarizer_model parameter...")
     if summarizer_model == 'openai':
+        print("Using OpenAI summarization.")
         summary = summarize_articles(query, all_text)
     elif summarizer_model == 'huggingface':
-        # Call your local summarization function implemented with a HuggingFace model.
+        print("Using HuggingFace local summarization.")
         summary = summarize_articles_local(query, all_text)
     else:
         raise ValueError("Unsupported summarizer_model. Choose 'openai' or 'huggingface'.")
-
+    
     print("\nSummary:\n" + "-" * 40)
     print(summary)
 
@@ -148,8 +154,10 @@ def query_news(summarizer_model, query):
         "matches": match_summaries
     }
 
-
 # Run
 if __name__ == "__main__":
+    print("Running query_and_summarize.py as main...")
     user_query = input("What would you like to know about? ")
-    query_news(summarizer_model = 'openai', query = user_query)
+    result = query_news(summarizer_model='openai', query=user_query)
+    print("\nFinal summary output:")
+    print(result["summary"])
