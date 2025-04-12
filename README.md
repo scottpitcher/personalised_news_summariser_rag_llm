@@ -2,6 +2,8 @@
 
 This project is a personalized news summarization app that uses **Retrieval-Augmented Generation (RAG)** to fetch, filter, and summarize daily news articles according to a user's interests and preferred summary style.
 
+Check out the full report and deployment [here!](https://scottpitcher.github.io/#newsretrievalpage)
+
 ### 🔍 Overview
 - Pulls recent news articles using public APIs or RSS feeds *(src/fetch_urls.py)*
   - **Scrapes** those articles *(scrape_full_articles.py)*
