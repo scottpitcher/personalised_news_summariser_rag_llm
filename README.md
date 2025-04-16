@@ -16,7 +16,7 @@ Check out the full report and deployment [here!](https://scottpitcher.github.io/
 
 ---
 ## 💻 Example Usage
-### News Summariser
+### 1. News Summariser
 <sub><i>*Note: all prompts were selected from top headlines when creating this project.</i></sub>
 
 Example 1: Politics
@@ -26,7 +26,7 @@ Example 2: Economy
 Example 3: Science
 ![Example Query 3](images/Example%20Query%203.png)
 
-### Custom Tone Adaption
+### 2. Custom Tone Adaption
 The following guidelines were used to tune the model's summary delivery:
 - **Factual with Context:** The summary must include key facts along with context, rather than just bare information.
 - **Slightly Casual with Personality:** The tone should have a hint of casualness and personality without sacrificing professionalism.
