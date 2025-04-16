@@ -4,7 +4,7 @@ This project is a personalized news summarization app that uses **Retrieval-Augm
 
 Check out the full report and deployment [here!](https://scottpitcher.github.io/#newsretrievalpage)
 
-### 🔍 Overview
+## 🔍 Overview
 - Pulls recent news articles using public APIs or RSS feeds *(src/fetch_urls.py)*
   - **Scrapes** those articles *(scrape_full_articles.py)*
 - **DOES NOT** chunk articles due to context issues within them; news articles tend to be short, so context window would not be hit *(src/embed_articles.py)*
@@ -15,8 +15,8 @@ Check out the full report and deployment [here!](https://scottpitcher.github.io/
 - Delivers clean, readable digests in your **preferred tone and format** *(src/rlhf_finetune.py)*
 
 ---
-### 💻 Example Usage
-#### News Summariser
+## 💻 Example Usage
+### News Summariser
 <sub><i>*Note: all prompts were selected from top headlines when creating this project.</i></sub>
 
 Example 1: Politics
@@ -26,13 +26,13 @@ Example 2: Economy
 Example 3: Science
 ![Example Query 3](images/Example%20Query%203.png)
 
-#### Custom Tone Adaption
+### Custom Tone Adaption
 The following guidelines were used to tune the model's summary delivery:
 - **Factual with Context:** The summary must include key facts along with context, rather than just bare information.
 - **Slightly Casual with Personality:** The tone should have a hint of casualness and personality without sacrificing professionalism.
 - **Data-Driven:** Ensure the summary cites clear data points or uses factual evidence.
 ---
-### 🔨 Roadblocks + Solutions
+## 🔨 Roadblocks + Solutions
 | Roadblock      | Solution                                  |
 |----------------|-------------------------------------------|
 |No inherent 'politics' category in NewsAPI|Created custom category using keyword search via the everything endpoint |
@@ -42,7 +42,7 @@ The following guidelines were used to tune the model's summary delivery:
 
 <sub><i>*Note: all **potential additions** have not been added yet, and are stated to address gaps in project application.</i></sub>
 
-### ⚙️ Features
+## ⚙️ Features
 
 - 🔎 **Semantic Article Retrieval** using vector similarity (FAISS / Chroma)
 - 🤖 **Custom Summarization Styles** (bullet points, casual, academic, etc.)
@@ -53,7 +53,7 @@ The following guidelines were used to tune the model's summary delivery:
 
 ---
 
-### 🛠️ Tech Stack
+## 🛠️ Tech Stack
 
 | Component      | Tool                                      |
 |----------------|-------------------------------------------|
