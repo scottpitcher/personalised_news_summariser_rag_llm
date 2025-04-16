@@ -27,8 +27,10 @@ Example 3: Science
 ![Example Query 3](images/Example%20Query%203.png)
 
 #### Custom Tone Adaption
-[... In Progress...]
-
+The following guidelines were used to tune the model's summary delivery:
+- **Factual with Context:** The summary must include key facts along with context, rather than just bare information.
+- **Slightly Casual with Personality:** The tone should have a hint of casualness and personality without sacrificing professionalism.
+- **Data-Driven:** Ensure the summary cites clear data points or uses factual evidence.
 ---
 ### 🔨 Roadblocks + Solutions
 | Roadblock      | Solution                                  |
