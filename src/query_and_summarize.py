@@ -20,7 +20,6 @@ device = torch.device("cpu")
 local_summarizer_model = local_summarizer_model.to(device)
 
 # Config
-
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 VECTOR_STORE_DIR = Path("data/vector_store")
