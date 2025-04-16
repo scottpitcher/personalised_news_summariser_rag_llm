@@ -60,7 +60,7 @@ The following guidelines were used to tune the model's summary delivery:
 | Language       | Python                                    |
 | Retrieval      | FAISS                           |
 | Embeddings     | sentence-transformers / OpenAI Embeddings |
-| LLMs           | OpenAI GPT-3.5         |
+| LLMs           | transformers (t5-base)         |
 | Summarization  | LangChain / Custom Prompt Templates       |
 | UI (Optional)  | Flask                        |
 | Data Storage   | JSON / CSV                       |
