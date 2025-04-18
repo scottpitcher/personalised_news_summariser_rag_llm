@@ -1,112 +1,100 @@
 # rlhf_finetune.py
 import json
-from datetime import datetime
-from reward_calculation import calculate_reward
+from pathlib import Path
+import torch
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from trl import PPOConfig, PPOTrainer
 
-# Define the path to your feedback log file (ensure the folder "data/" exists)
-FEEDBACK_LOG_PATH = "data/fine_tune_data/feedback_log.json"
+# Config & Paths
+FEEDBACK_LOG_PATH = Path("data/fine_tune_data/feedback_log.json")
+MODEL_NAME = "t5-base"   # or facebook/bart-base, etc.
+DEVICE = torch.device("cpu")  # or "cuda" if you have a GPU
 
-def load_feedback_log():
+
+# Reward Mapping
+def calculate_reward(feedback):
     """
-    Loads feedback log entries from the JSON file.
-    Each log entry should have keys: 'query', 'summary', 'feedback', and 'timestamp'.
-    Returns a list of feedback entry dictionaries.
+    Map raw feedback to a numeric reward.
+    thumbs_up   -> +1.0
+    thumbs_down -> -1.0
+    {"rewrite": "..."} -> -0.5
     """
-    try:
-        with open(FEEDBACK_LOG_PATH, "r") as f:
-            return json.load(f)
-    except Exception as e:
-        print("Error loading feedback log:", e)
+    if isinstance(feedback, str):
+        if feedback == "thumbs_up":
+            return 1.0
+        if feedback == "thumbs_down":
+            return -1.0
+    if isinstance(feedback, dict) and "rewrite" in feedback:
+        return -0.5
+    return 0.0
+
+# Load Feedback Log
+def load_feedback_data():
+    """
+    Reads the JSON feedback log and returns a list of
+    (query, summary, reward) tuples for RL training.
+    """
+    if not FEEDBACK_LOG_PATH.exists():
         return []
 
-def prepare_rl_batch():
-    """
-    Prepares a training batch for RL fine-tuning.
-    Converts each feedback entry into a tuple (query, summary, reward),
-    where reward is computed using the calculate_reward function.
-    """
-    feedback_entries = load_feedback_log()
-    batch = []
-    if not feedback_entries:
-        print("No feedback entries found.")
-        return batch
+    with open(FEEDBACK_LOG_PATH, "r") as f:
+        entries = json.load(f)
 
-    for entry in feedback_entries:
-        query = entry.get("query")
-        summary = entry.get("summary")
-        feedback = entry.get("feedback")
-        # Convert the user feedback into a numerical reward.
-        reward = calculate_reward(feedback)
-        batch.append((query, summary, reward))
-    return batch
+    dataset = []
+    for e in entries:
+        q = e.get("query", "")
+        s = e.get("summary", "")
+        r = calculate_reward(e.get("feedback"))
+        dataset.append((q, s, r))
+    return dataset
 
-def compute_rl_loss(predicted_summary, target_summary, reward):
-    """
-    Placeholder function for computing the RL loss.
-    
-    In a real implementation, you might combine a standard loss (like cross-entropy)
-    with a reward-based term (which may, for instance, encourage high rewards).
-    
-    Here, we simply return a dummy loss value based on the reward. Adjust this function
-    according to your RL method and model architecture.
-    """
-    # This dummy loss simply negates the reward as a placeholder.
-    loss = -reward
-    return loss
+# Setup Model & PPO
+# Load tokenizer & model
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME).to(DEVICE)
 
-def rlhf_update(model, optimizer):
-    """
-    Performs one round of RL fine-tuning on the summarizer model.
-    
-    Arguments:
-      - model: Your summarizer model which supports a forward() method for prediction.
-      - optimizer: Your optimizer for updating the model parameters.
-    
-    This function loops through the training batch (each sample being a tuple of (query, summary, reward)).
-    For each sample, it:
-      1. Obtains the predicted summary by passing the query to the model.
-      2. Computes a loss that is a function of the difference between the predicted summary and the target summary,
-         modulated by the reward signal.
-      3. Backpropagates the loss and performs a gradient update.
-    """
-    training_batch = prepare_rl_batch()
-    if not training_batch:
-        print("No training batch available. Exiting update.")
-        return
-    
-    print("Starting RL update on {} examples.".format(len(training_batch)))
-    for (query, target_summary, reward) in training_batch:
-        # Pseudocode: Replace with your model's prediction
-        # predicted_summary = model.forward(query)
-        # For illustration, we simulate a predicted summary with the target summary itself.
-        predicted_summary = target_summary  # Remove or replace with actual model call.
-        
-        # Compute the RL loss (this is a placeholder implementation).
-        loss = compute_rl_loss(predicted_summary, target_summary, reward)
-        
-        # Pseudocode: Zero out gradients, backpropagate the loss, and update the model parameters.
-        # optimizer.zero_grad()
-        # loss.backward()
-        # optimizer.step()
-        
-        # For demonstration, we print the update step details.
-        print("Query:", query)
-        print("Target Summary:", target_summary)
-        print("Reward:", reward)
-        print("Computed Loss (simulated):", loss)
-        print("Performing RL update step for this sample (simulated).\n")
-    
-    print("RLHF update completed at", datetime.utcnow().isoformat())
+# Configure PPO
+ppo_config = PPOConfig(
+    model_name=MODEL_NAME,
+    learning_rate=1e-5,
+    batch_size=2,        # adjust to your GPU/memory
+    ppo_epochs=4,
+    optimize_cuda_cache=True
+)
 
+# Instantiate the PPO trainer
+ppo_trainer = PPOTrainer(config=ppo_config, model=model, tokenizer=tokenizer)
+
+# RLHF Training Loop
+def rlhf_finetune(dataset, iterations=1):
+    """
+    Runs RL fine‑tuning over the dataset for a given
+    number of full passes (iterations).
+    """
+    for it in range(iterations):
+        print(f"=== RLHF Iteration {it+1}/{iterations} ===")
+        for query, summary, reward in dataset:
+            # PPO expects lists of queries & generations
+            queries    = [query]
+            generations = [summary]
+            rewards    = [reward]
+
+            # Perform one PPO update step
+            stats = ppo_trainer.step(queries, generations, rewards)
+            print(f"Query: {query!r} | Reward: {reward:.2f} | Stats: {stats}")
+
+# Execute & Save
 if __name__ == "__main__":
-    # Pseudocode: Load your model and optimizer.
-    # For example:
-    # from your_model_library import SummarizerModel, Optimizer
-    # model = SummarizerModel.load_from_checkpoint("path/to/checkpoint")
-    # optimizer = Optimizer(model.parameters(), lr=1e-5)
-    
-    # For this demonstration, we'll use placeholders.
-    model = None      # Replace with your model instance.
-    optimizer = None  # Replace with your actual optimizer.
-    
-    rlhf_update(model, optimizer)
+    data = load_feedback_data()
+    if not data:
+        print("No feedback data found. Exiting.")
+        exit()
+
+    # Run RLHF for 3 passes over the data
+    rlhf_finetune(data, iterations=3)
+
+    # Save the updated model
+    save_path = "data/fine_tuned_model_rlhf"
+    model.save_pretrained(save_path)
+    tokenizer.save_pretrained(save_path)
+    print(f"Fine-tuned model saved to {save_path}")
