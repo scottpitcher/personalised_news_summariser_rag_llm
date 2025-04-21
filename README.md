@@ -48,8 +48,8 @@ The following guidelines were used to tune the model's summary delivery:
 - 🤖 **Custom Summarization Styles** (bullet points, casual, academic, etc.)
 - 📰 **News API or RSS Integration** (e.g., NewsAPI, The Guardian)
 - 📥 **User Preference Profiles** (topics, style, summary length)
-- 🧠 **LLM Integration** using OpenAI, Mistral, or LLaMA models
-- 📊 **Feedback Logging** for future RLHF or fine-tuning [Pending...]
+- 🧠 **LLM Integration** using OpenAI and transformer models
+- 📊 **Feedback Logging** for tone/style fine-tuning [In Progress...]
 
 ---
 
