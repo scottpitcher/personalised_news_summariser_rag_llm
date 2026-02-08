@@ -1,30 +1,26 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from src.query_and_summarize import query_news
+from fastapi import FastAPI  # FastAPI framework import
+from fastapi.middleware.cors import CORSMiddleware  # CORS middleware import
+from pydantic import BaseModel  # request schema base class
 
-app = FastAPI()
+app = FastAPI()  # create app immediately (must be fast)
 
-# ---------- CORS Middleware ----------
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # You can later restrict to your GitHub.io URL
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+app.add_middleware(  # add CORS settings
+    CORSMiddleware,  # enable CORS
+    allow_origins=["*"],  # allow all origins (tighten later)
+    allow_credentials=True,  # allow cookies/auth headers
+    allow_methods=["*"],  # allow all HTTP methods
+    allow_headers=["*"],  # allow all headers
 )
 
-# ---------- Request Schema ----------
-class QueryRequest(BaseModel):
-    query: str
+class QueryRequest(BaseModel):  # define request body schema
+    query: str  # the user query
 
-# ---------- Status Check ----------
-@app.get("/")
-def root():
-    return {"message": "News summarizer is live!"}
+@app.get("/")  # health check route
+def root():  # handler function
+    return {"message": "News summarizer is live!"}  # simple response
 
-# ---------- Endpoint ----------
-@app.post("/query")
-def handle_query(req: QueryRequest):
-    response =  query_news(summarizer_model = 'openai', query = req.query)
-    return {"summary": response["summary"], "matches": response["matches"]}
+@app.post("/query")  # main route
+def handle_query(req: QueryRequest):  # handler function
+    from src.query_and_summarize import query_news  # import lazily to avoid slow startup
+    response = query_news(summarizer_model="openai", query=req.query)  # run your pipeline
+    return {"summary": response["summary"], "matches": response["matches"]}  # return result
